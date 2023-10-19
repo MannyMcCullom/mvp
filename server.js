@@ -23,7 +23,7 @@ app.get('/users', (req, res)=>{
     .then(result=>{
         console.log(result.rows)
         console.log(JSON.stringify(result.rows))
-        const p = document.createElement('div');
+        // const p = document.createElement('div');
         // p.innerText = JSON.stringify(result.rows);
         // document.body.append(p);
     })

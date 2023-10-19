@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "migrate": "psql -f migration.sql mvp; psql -f seed.sql mvp",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",

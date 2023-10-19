@@ -18,7 +18,7 @@ const client = new pg.Client({
 
 await client.connect();
 
-app.get('/users', (req, res)=>{
+app.get('/', (req, res)=>{
     client.query('SELECT * FROM users')
     .then(result=>{
         console.log(result.rows)

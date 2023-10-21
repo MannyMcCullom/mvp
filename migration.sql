@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS players;
 
-CREATE TABLE users (
+CREATE TABLE players (
     user_id SERIAL PRIMARY KEY,
     name TEXT,
-    meal TEXT
+    score INTEGER
 );

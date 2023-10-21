@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 
 const app = express();
 
+app.use(express.static("public"));
+app.use(express.json());
+
 dotenv.config();
 
 const port = process.env.PORT;
@@ -14,20 +17,18 @@ const client = new pg.Client({
     connectionString: database_url
 });
 
-// app.use(json())
 
 await client.connect();
 
 app.get('/', (req, res)=>{
+    res.send('Homepage');
+});
+
+app.get('/users', (req, res)=>{
     client.query('SELECT * FROM users')
     .then(result=>{
-        console.log(result.rows)
-        console.log(JSON.stringify(result.rows))
-        // const p = document.createElement('div');
-        // p.innerText = JSON.stringify(result.rows);
-        // document.body.append(p);
+        res.json(result.rows);
     })
-    res.send('Good');
 });
 
 app.listen(port, ()=>{

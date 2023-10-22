@@ -23,33 +23,35 @@ enter.addEventListener('click', ()=>{
     };
 
     if (input.value.length > 0) {
-        // -----------------------------------------------------------------------------
-        // Disclaimer: Ripped from thunderclient.(I don't understand post requests on the front end.)
+// -----------------------------------------------------------------------------
+// Disclaimer: Ripped from thunderclient.
+// I don't understand POST requests on the front-end.
+
         let headersList = {
             "Accept": "*/*",
             "Content-Type": "application/json"
-           }
-           
-           let bodyContent = JSON.stringify({
-             "name": input.value,
-             "score": 0
-           });
-           
-           let response = fetch("/players", { 
-             method: "POST",
-             body: bodyContent,
-             headers: headersList
-           })
-           .then((data)=>{
+        }
+
+        let bodyContent = JSON.stringify({
+            "name": input.value,
+            "score": 0
+        });
+        
+        fetch("/players", { 
+            method: "POST",
+            body: bodyContent,
+            headers: headersList
+        })
+        .then((data)=>{
             console.log(data)
-           })
+        })
     }
+            
 // -----------------------------------------------------------------------------
 
     // Always clears text box
     input.value = '';
 });
-
 
 hideScore.addEventListener('click', ()=>{
     hideScore.remove();
@@ -71,6 +73,8 @@ showScore.addEventListener('click', ()=>{
             // ScoreBoard display for each player.
             let score = String(player.score);
             let scoreString = [count, '._', player.name];
+            scoreString = scoreString.join('');
+            scoreString = scoreString.split('');
             count++;
             // Make each score display have same amount of characters.
             scoreString[20 - score.length] = player.score;
@@ -82,6 +86,7 @@ showScore.addEventListener('click', ()=>{
             const user = document.createElement('div');
             scoreString = scoreString.join('');
             user.textContent = scoreString;
+            user.classList.add('.scoreText')
             players.append(user);
         }
         players.prepend('HIGH SCORE')

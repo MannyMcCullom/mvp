@@ -1,7 +1,16 @@
 .scoreBoard_Container {
-    font-style: italic;
+    font-family: 'Roboto Mono', monospace;
 }
 
 .players {
-    font-style: italic;
+    font-family: 'Roboto Mono', monospace;
+}
+
+body {
+    background-color: black;
+    color:white;
+}
+
+.scoreText {
+    color:white;
 }

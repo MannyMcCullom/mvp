@@ -23,24 +23,28 @@ enter.addEventListener('click', ()=>{
     };
 
     if (input.value.length > 0) {
-        const name = input.value;
-        const reqBody = JSON.stringify({"name": name, "score": 0})
-        console.log('input.value', input.value);
-
-        fetch('/players', {
-            method: "POST",
-            body: JSON.stringify({
-                "name": name,
-                "score": 0
-            })
-        })
-        .then((response)=>{
-            return response.json()
-        })
-        .then((data)=>{
+        // -----------------------------------------------------------------------------
+        // Disclaimer: Ripped from thunderclient.(I don't understand post requests on the front end.)
+        let headersList = {
+            "Accept": "*/*",
+            "Content-Type": "application/json"
+           }
+           
+           let bodyContent = JSON.stringify({
+             "name": input.value,
+             "score": 0
+           });
+           
+           let response = fetch("/players", { 
+             method: "POST",
+             body: bodyContent,
+             headers: headersList
+           })
+           .then((data)=>{
             console.log(data)
-        })
+           })
     }
+// -----------------------------------------------------------------------------
 
     // Always clears text box
     input.value = '';
@@ -55,7 +59,6 @@ hideScore.addEventListener('click', ()=>{
 })
 
 showScore.addEventListener('click', ()=>{
-    // console.log('clicked')
     showScore.remove()
     document.body.append(hideScore);
     fetch('/players')

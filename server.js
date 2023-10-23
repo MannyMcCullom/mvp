@@ -21,7 +21,7 @@ app.get('/players', (req, res)=>{
     .then(result=>{
         res.json(result.rows);
     })
-});
+}); 
 
 app.post('/players', (req, res)=>{
     console.log(req.body)

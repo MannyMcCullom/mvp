@@ -1,6 +1,7 @@
 const screen = document.querySelector('#screenContainer');
 
 const scene = document.querySelector('.scene');
+scene.setAttribute('onmousemove', 'myCoor(scene.style)')
 let size = 80;
 scene.style.height = `${size * 9}px`
 scene.style.width = `${size * 16}px`
@@ -17,12 +18,14 @@ players.remove();
 const box = document.createElement('div');
 box.classList.add('player');
 
+let game = true;
+
 let movingLeft = false;
 let movingRight = false;
 let movingUp = false;
 let movingDown = true;
 
-let bottom = 0;
+let bottom = 600;
 let left = 0;
 
 let leftMove;
@@ -30,19 +33,57 @@ let RightMove;
 let upMove;
 let downMove;
 
+let obstacles = []
 scene.append(box);
+
+function myCoor(e) {
+    let x = e.left;
+    let y = e.bottom;
+    let coor = "Coordinates: (" + x + "," + y + ")";
+    console.log(coor);
+  }
+
+// const ob1 = document.querySelector('#ob1');
+function createObstacle(height,width,left,bottom){
+    const ob1 = document.createElement('div');
+    ob1.classList.add('obstacle')
+    ob1.setAttribute('id', 'ob1');
+    ob1.style.height = `${height}px`;
+    ob1.style.width = `${width}px`;
+    ob1.style.left = `${left}px`;
+    ob1.style.bottom = `${bottom}px`;
+    scene.append(ob1);
+    obstacles.push(ob1);
+}
+createObstacle(50, 50, 500, 0);
+createObstacle(5, 500, 0, 70);
+console.log(obstacles)
+
+
+
+// console.log('width', ob1.style)
 // -----------------------------------------------------------------------------
 // Functions
 function downInterval() {
     downMove = setInterval(()=>{
-        bottom--;
+        bottom = bottom - 1.5;
+        for (let i = 0; i < obstacles.length; i++) {
+            if (left > Number(obstacles[i].style.left.slice(0,-2)) - 10
+            && left < Number(obstacles[i].style.left.slice(0,-2)) + Number(obstacles[i].style.width.slice(0,-2))
+            && bottom < Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2))
+            && bottom > Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2)) - 20) {
+                bottom = Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2))
+                movingUp = false;
+            }
+        }
         if (bottom < 0) {
             bottom = 0;
             movingUp = false;
         }
         box.style.bottom = `${bottom}px`;
-    },.75) 
+    },1) 
 }
+
 
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
@@ -109,13 +150,16 @@ document.addEventListener("keydown", (event) => {
             if (movingRight === true) {
                 setTimeout(()=>{
                     clearInterval(rightMove);
-                },250)
+                },100)
                 movingRight = false;
             } else {
                 leftMove = setInterval(()=>{
                     left--;
                     if (left < 0) {
                         left = 0;
+                    }
+                    if ((left > 490 && left < 550) && bottom < 50) {
+                        left = 550;
                     }
                     box.style.left = `${left}px`;
                 },1)
@@ -128,13 +172,16 @@ document.addEventListener("keydown", (event) => {
             if (movingLeft === true) {
                 setTimeout(()=>{
                     clearInterval(leftMove);
-                },250)
+                },100)
                 movingLeft = false;
             } else {
                 rightMove = setInterval(()=>{
                     left++;
                     if (left > 1270) {
                         left = 1270;
+                    }
+                    if ((left > 490 && left < 550) && bottom < 50) {
+                        left = 490;
                     }
                     box.style.left = `${left}px`;
                 },1)

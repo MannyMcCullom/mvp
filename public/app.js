@@ -1,49 +1,100 @@
 const screen = document.querySelector('#screenContainer');
 
 const scene = document.querySelector('.scene');
-scene.setAttribute('onmousemove', 'myCoor(scene.style)')
 let size = 80;
 scene.style.height = `${size * 9}px`
 scene.style.width = `${size * 16}px`
 
 const input = document.querySelector('#username');
+input.remove()
 const enter = document.querySelector('#username_Button');
+enter.remove()
+const players = document.querySelector('#highScore');
 
-const showScore = document.querySelector('#showScore');
-const hideScore = document.querySelector('#hideScore');
-hideScore.remove();
-const players = document.querySelector('#highScore')
-players.remove();
+// const showScore = document.querySelector('#showScore');
 
+let boxSize = 10;
 const box = document.createElement('div');
 box.classList.add('player');
+box.style.height = `${boxSize}px`;
+box.style.width = `${boxSize}px`;
 
 let game = true;
+let landed = false;
+let stopped = true;
+let slide = false;
+let clock = 60;
 
 let movingLeft = false;
 let movingRight = false;
 let movingUp = false;
 let movingDown = true;
 
-let bottom = 600;
-let left = 0;
+let bottom = 500;
+let left = 500;
+left = 5000; // Cheat 
 
 let leftMove;
-let RightMove;
+let rightMove;
 let upMove;
 let downMove;
 
 let obstacles = []
 scene.append(box);
 
-function myCoor(e) {
-    let x = e.left;
-    let y = e.bottom;
-    let coor = "Coordinates: (" + x + "," + y + ")";
-    console.log(coor);
-  }
+createObstacle(30, 100, 100, 100); // (height,width,left,bottom)
+createObstacle(30, 100, 200, 300); // (height,width,left,bottom)
+createObstacle(30, 100, 300, 200); // (height,width,left,bottom)
+createObstacle(30, 200, 600, 200); // (height,width,left,bottom)
+createObstacle(30, 280, 1000, 200); // (height,width,left,bottom)
+createEnd(30,30,1250,230)
 
-// const ob1 = document.querySelector('#ob1');
+// Functions--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+function calculateScore(clock) {
+    return clock * 1000;
+}
+
+let runClock = setInterval(()=>{
+    clock--;
+    if (clock <= 0) {
+        clock = 0;
+        clearInterval(runClock);
+    }
+},1000)
+
+let displayTime = setInterval(() => {
+    console.log(clock);
+}, 1000);
+
+function setTimer() {
+    runClock
+    displayTime
+}
+
+// Clearing
+
+function clearVerticalIntervals(){
+    clearInterval(upMove);
+    clearInterval(downMove);
+}
+
+function clearHorizontalIntervals(){
+    clearInterval(leftMove);
+    clearInterval(rightMove);
+}
+
+function noVertical() {
+    movingDown = false;
+    movingUp = false;
+}
+
+function noHorizantal() {
+    movingLeft = false;
+    movingRight = false;
+}
+
+// Game World
+
 function createObstacle(height,width,left,bottom){
     const ob1 = document.createElement('div');
     ob1.classList.add('obstacle')
@@ -55,41 +106,226 @@ function createObstacle(height,width,left,bottom){
     scene.append(ob1);
     obstacles.push(ob1);
 }
-createObstacle(50, 50, 500, 0);
-createObstacle(5, 500, 0, 70);
-console.log(obstacles)
 
+function createEnd(height,width,left,bottom){
+    const end = document.createElement('div');
+    end.innerText = 'end'
+    end.classList.add('end')
+    end.setAttribute('id', 'end');
+    end.style.height = `${height}px`;
+    end.style.width = `${width}px`;
+    end.style.left = `${left}px`;
+    end.style.bottom = `${bottom}px`;
+    scene.append(end);
+    obstacles.push(end);
+}
 
+function barrier() {
 
-// console.log('width', ob1.style)
-// -----------------------------------------------------------------------------
-// Functions
-function downInterval() {
-    downMove = setInterval(()=>{
-        bottom = bottom - 1.5;
-        for (let i = 0; i < obstacles.length; i++) {
-            if (left > Number(obstacles[i].style.left.slice(0,-2)) - 10
-            && left < Number(obstacles[i].style.left.slice(0,-2)) + Number(obstacles[i].style.width.slice(0,-2))
-            && bottom < Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2))
-            && bottom > Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2)) - 20) {
-                bottom = Number(obstacles[i].style.bottom.slice(0,-2)) + Number(obstacles[i].style.height.slice(0,-2))
-                movingUp = false;
+    let plaHeight = Number(box.style.height.slice(0, -2));
+    let plaWidth = Number(box.style.width.slice(0, -2));
+
+    let sceneBottom = Number(scene.style.bottom.slice(0, -2));
+    let sceneHeight = Number(scene.style.height.slice(0, -2));
+    let sceneLeft = Number(scene.style.left.slice(0, -2));
+    let sceneWidth = Number(scene.style.width.slice(0, -2));
+    
+    let endBottom = Number(end.style.bottom.slice(0, -2))
+    let endHeight = Number(end.style.height.slice(0, -2));
+    let endLeft = Number(end.style.left.slice(0, -2));
+    let endWidth = Number(end.style.width.slice(0, -2));
+
+    let checkEnd = setInterval(()=>{
+        if (((bottom < (endBottom + endHeight)) && (bottom > (endBottom - plaHeight)))
+        && ((left > endLeft - plaWidth) && (left < (endLeft + endWidth)))) {
+            clearInterval(runClock);
+            clearInterval(displayTime);
+            end.remove()
+            document.querySelector('h1').remove()
+            console.log(`You Win with ${clock} seconds to spare`)
+            scene.append(input);
+            scene.append(enter)
+            const win = document.createElement('h1');
+            win.textContent = `You Reached the End with ${clock} seconds to spare.`
+            scene.append(win);
+
+        }
+    },1)
+    
+    checkObstacles = setInterval(()=>{
+        for (let i = 0; i - obstacles.length; i++) {
+
+            let obcBottom = Number(obstacles[i].style.bottom.slice(0, -2));
+            let obcHeight = Number(obstacles[i].style.height.slice(0, -2));
+            let obcLeft = Number(obstacles[i].style.left.slice(0, -2));
+            let obcWidth = Number(obstacles[i].style.width.slice(0, -2));
+
+            if(movingDown
+            && ((bottom < obcBottom + obcHeight)
+            && bottom > (obcBottom + plaHeight) - (plaHeight / 2))){
+                if((left > obcLeft - plaWidth
+                && left < obcLeft + obcWidth)) {
+                    clearVerticalIntervals()
+                    noVertical();
+                    bottom = obcBottom + obcHeight;
+                    checkMovingLand()
+                }
             }
+            
+            if(movingUp
+            && ((bottom > obcBottom - (plaHeight / 2))
+            && bottom < (obcBottom + plaHeight))){
+                if((left > obcLeft - plaWidth
+                && left < obcLeft + obcWidth)) {
+                    clearVerticalIntervals()
+                    noVertical();
+                    movingDown = true;
+                    bottom = obcBottom - plaHeight;
+                }
+            }
+
+            if(movingLeft
+            && ((bottom <= obcBottom + obcHeight)
+            && bottom >= (obcBottom + plaHeight) - (plaHeight / 2))){
+                if((left > obcLeft - plaWidth
+                && left < obcLeft)) {
+                    left = obcLeft;
+                    clearHorizontalIntervals()
+                    noHorizantal()
+                    // clearTimeout(landCheck)
+                    checkMovingLand()
+                }
+            }
+
+            if(movingRight
+            && ((bottom <= obcBottom + obcHeight)
+            && bottom >= (obcBottom + plaHeight) - (plaHeight / 2))){
+                if((left > obcLeft + obcWidth - plaWidth
+                && left < obcLeft + obcWidth)) {
+                    console.log('right')
+                    left = obcLeft + obcWidth - plaWidth;
+                    clearHorizontalIntervals()
+                    noHorizantal()
+                    // clearTimeout(landCheck)
+                    checkMovingLand()
+                }
+            }
+                
         }
-        if (bottom < 0) {
-            bottom = 0;
-            movingUp = false;
+        // End of interval 
+    },1)
+
+    
+    checkBarrier = setInterval(()=>{
+        // Top Border Check
+        if (bottom > sceneHeight) {
+            clearVerticalIntervals();
+            noVertical();
+            movingDown = true;
+            bottom = sceneHeight - plaHeight;
         }
+        // Bottom Border Check
+        if (bottom < sceneBottom) {
+            console.log('lost')
+            clearVerticalIntervals()
+            noVertical()
+            bottom = sceneBottom;
+            checkMovingLand();
+        }
+        // Left Border Check
+        if (left < sceneLeft) {
+            clearHorizontalIntervals()
+            noHorizantal()
+            left = sceneLeft;
+            stopped = true;
+        }
+        // Right Border Check
+        if (left > sceneWidth - plaWidth) {
+            clearHorizontalIntervals()
+            noHorizantal()
+            left = sceneWidth - plaWidth;
+            stopped = true;
+        }
+        // physics()
         box.style.bottom = `${bottom}px`;
+        box.style.left = `${left}px`;
     },1) 
 }
 
+function physics(){
+    if (movingDown){
+        downInterval();
+    }
+
+    if (movingUp) {
+        upInterval();
+    }
+
+    if (movingLeft) {
+        leftInterval();
+    }
+
+    if (movingRight) {
+        rightInterval();
+    }
+
+    console.log(
+        'movingUp:', movingUp,
+        'movingDown:', movingDown,
+        'movingRight:', movingRight,
+        'movingLeft:', movingLeft
+        )
+    barrier();
+}
+
+// Intervals
+
+function downInterval() {
+    downMove = setInterval(()=>{
+        bottom = bottom - 3;
+    },1) 
+}
+
+function upInterval() {
+    upMove = setInterval(()=>{
+        bottom = bottom + 1;
+    },1) 
+}
+
+function leftInterval() {
+    leftMove = setInterval(()=>{
+        left = left - 1;
+    },1) 
+}
+
+function rightInterval() {
+    rightMove = setInterval(()=>{
+        left = left + 1;
+    },1) 
+}
+
+function checkMovingLand() {
+    if (stopped === false){
+        clearHorizontalIntervals()
+        noHorizantal()
+        let landCheck = setTimeout(()=>{
+            stopped = true;
+            landed = true;
+        }, 100)
+    } else {
+        landed = true;
+    }
+}
+
+// DOM Functions
 
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
 }
+
+// Sound Functions
 
 function addMusic(sound) {
     const music = document.createElement('audio');
@@ -122,70 +358,72 @@ function addSFX(sound) {
     // Removes sfx from HTML in 5 seconds.
     setInterval(()=>{document.body.removeChild(sfx)},5000)
 }
-// Functions End
-// -----------------------------------------------------------------------------
+
+// End of Functions-------------------------------------------------------------------------------------------------------------------------------------------
+
 // Controls
+
 document.addEventListener("keydown", (event) => {
     const keyName = event.key;
     // console.log(keyName);
     if (keyName === 'ArrowUp') {
-        if (movingUp === false) {
-            clearInterval(downMove)
-            upMove = setInterval(()=>{
-                bottom++;
-                if (bottom > 710) {
-                    bottom = 710;
-                }
-                box.style.bottom = `${bottom}px`;
-            },1)
-            setTimeout(()=>{
-                clearInterval(upMove);
-                downInterval()
-            },500)
+        if (landed) {
+            if (!stopped) {
+                // stopped = true
+                noHorizantal();
+                // clearHorizontalIntervals()
+            }
+            clearVerticalIntervals();
             movingUp = true;
-        }
-    }
-    if (keyName === 'ArrowLeft') {
-        if (movingLeft === false) {
-            if (movingRight === true) {
+            landed = false;
+            physics();
+            if (!stopped) {
                 setTimeout(()=>{
-                    clearInterval(rightMove);
-                },100)
-                movingRight = false;
+                    clearVerticalIntervals();
+                    movingUp = false;
+                    movingDown = true;
+                    physics();
+                }, 750)
             } else {
-                leftMove = setInterval(()=>{
-                    left--;
-                    if (left < 0) {
-                        left = 0;
-                    }
-                    if ((left > 490 && left < 550) && bottom < 50) {
-                        left = 550;
-                    }
-                    box.style.left = `${left}px`;
-                },1)
-                movingLeft = true;
+                setTimeout(()=>{
+                    clearVerticalIntervals();
+                    movingUp = false;
+                    movingDown = true;
+                    physics();
+                }, 250)
             }
         }
     }
+
+    if (keyName === 'ArrowLeft') {
+        if (stopped && landed) {
+            clearHorizontalIntervals();
+            movingLeft = true;
+            stopped = false;
+            physics();
+        } else {
+            if (movingRight) {
+                clearHorizontalIntervals();
+                noHorizantal();
+                stopped = true;
+                physics();
+            }
+        }
+    }
+
+    console.log('stopped:', stopped, 'landed:', landed)
     if (keyName === 'ArrowRight') {
-        if (movingRight === false) {
-            if (movingLeft === true) {
-                setTimeout(()=>{
-                    clearInterval(leftMove);
-                },100)
-                movingLeft = false;
-            } else {
-                rightMove = setInterval(()=>{
-                    left++;
-                    if (left > 1270) {
-                        left = 1270;
-                    }
-                    if ((left > 490 && left < 550) && bottom < 50) {
-                        left = 490;
-                    }
-                    box.style.left = `${left}px`;
-                },1)
-                movingRight = true;
+        if (stopped && landed) {
+            clearHorizontalIntervals();
+            movingRight = true;
+            stopped = false;
+            physics();
+        } else {
+            if (movingLeft) {
+                clearHorizontalIntervals();
+                noHorizantal();
+                stopped = true;
+                physics();
             }
         }
     }
@@ -193,6 +431,41 @@ document.addEventListener("keydown", (event) => {
 // Controls End
 // -----------------------------------------------------------------------------
 // POST Request
+
+const populateScore = ()=>{
+    // showScore.remove()
+    removeAllChildNodes(players);
+    // screen.append(hideScore);
+    fetch('/players')
+    .then((response)=>{
+        return response.json();
+    })
+    .then((users)=>{
+        let count = 1;
+        for (let player of users) {
+            // ScoreBoard display for each player.
+            let score = String(player.score);
+            let scoreString = [count, '._', player.name];
+            scoreString = scoreString.join('');
+            scoreString = scoreString.split('');
+            count++;
+            // Make each score display have same amount of characters.
+            scoreString[20 - String(score.length)] = player.score;
+            for (let i = player.name.length; i <scoreString.length; i++) {
+                if (scoreString[i] === undefined) {
+                    scoreString[i] = '_';
+                }
+            }
+            const user = document.createElement('div');
+            scoreString = scoreString.join('');
+            user.textContent = scoreString;
+            user.classList.add('.scoreText')
+            players.append(user);
+        }
+        players.prepend('HIGH SCORE')
+    })
+}
+
 enter.addEventListener('click', ()=>{
     if (input.value.includes(' ') || input.value.length === 0) {
         addSFX('sfx_badEntry.mp3')
@@ -210,7 +483,7 @@ enter.addEventListener('click', ()=>{
 
         let bodyContent = JSON.stringify({
             "name": input.value,
-            "score": 0
+            "score": calculateScore(clock)
         });
         
         fetch("/players", { 
@@ -219,54 +492,33 @@ enter.addEventListener('click', ()=>{
             headers: headersList
         })
         .then((data)=>{
-            console.log(data)
+            return data.json()
         })
+        .then(newScore =>{
+            populateScore();
+        })
+        input.remove()
+        enter.remove()
+        location.reload()
     }
             
     input.value = ''; // Always clears text box
 });
 // -----------------------------------------------------------------------------
-hideScore.addEventListener('click', ()=>{
-    hideScore.remove();
-    removeAllChildNodes(players)
-    players.remove();
-    screen.append(showScore);
-})
+// hideScore.addEventListener('click', ()=>{
+//     hideScore.remove();
+//     removeAllChildNodes(players)
+//     players.remove();
+//     screen.append(showScore);
+// })
+
 // -----------------------------------------------------------------------------
 // GET Request
-showScore.addEventListener('click', ()=>{
-    showScore.remove()
-    screen.append(hideScore);
-    fetch('/players')
-    .then((response)=>{
-        return response.json();
-    })
-    .then((users)=>{
-        let count = 1;
-        for (let player of users) {
-            // ScoreBoard display for each player.
-            let score = String(player.score);
-            let scoreString = [count, '._', player.name];
-            scoreString = scoreString.join('');
-            scoreString = scoreString.split('');
-            count++;
-            // Make each score display have same amount of characters.
-            scoreString[20 - score.length] = player.score;
-            for (let i = player.name.length; i <scoreString.length; i++) {
-                if (scoreString[i] === undefined) {
-                    scoreString[i] = '_';
-                }
-            }
-            const user = document.createElement('div');
-            scoreString = scoreString.join('');
-            user.textContent = scoreString;
-            user.classList.add('.scoreText')
-            players.append(user);
-        }
-        players.prepend('HIGH SCORE')
-        screen.append(players);
-    })
-})
+// showScore.addEventListener('click', populateScore)
+
+
 // -----------------------------------------------------------------------------
-addMusic('music.mp3');
-downInterval()
+addMusic('music.ogg');
+physics();
+populateScore();
+setTimer();

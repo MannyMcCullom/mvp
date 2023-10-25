@@ -31,10 +31,7 @@ body {
 
 .player {
     position:absolute;
-    width: 10px;
-    height: 10px;
     background-color: yellow;
-    bottom: 0px;
     
     animation-name: '';
     animation-duration: 4s;
@@ -63,4 +60,20 @@ body {
     /* 50%  {background-color:blue; left:200px; top:200px;}
     75%  {background-color:green; left:0px; top:200px;}
     100% {background-color:red; left:0px; top:0px;} */
+  }
+
+  .end {
+    position:absolute;
+    background-color: white;
+  }
+
+  .textBox {
+    /* position: absolute; */
+    /* width: 300px; */
+    /* bottom: 50%;
+    left: 0%; */
+    font-family: 'Roboto Mono', monospace;
+    font-size: 64px;
+    background-color: black;
+    color: white;
   }

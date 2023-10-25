@@ -32,7 +32,7 @@ let movingDown = true;
 
 let bottom = 500;
 let left = 500;
-left = 5000; // Cheat 
+// left = 5000; // Cheat 
 
 let leftMove;
 let rightMove;

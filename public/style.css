@@ -77,3 +77,12 @@ body {
     background-color: black;
     color: white;
   }
+
+  #timer {
+    position: absolute;
+    left: 25px;
+    bottom:75%;
+    font-size: 64px;
+    font-family: 'Roboto Mono', monospace;
+
+  }

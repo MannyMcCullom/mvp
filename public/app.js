@@ -11,7 +11,7 @@ const enter = document.querySelector('#username_Button');
 enter.remove()
 const players = document.querySelector('#highScore');
 
-// const showScore = document.querySelector('#showScore');
+const currentTime = document.querySelector('#timer');
 
 let boxSize = 10;
 const box = document.createElement('div');
@@ -31,7 +31,7 @@ let movingUp = false;
 let movingDown = true;
 
 let bottom = 500;
-let left = 500;
+let left = 200;
 // left = 5000; // Cheat 
 
 let leftMove;
@@ -63,12 +63,14 @@ let runClock = setInterval(()=>{
 },1000)
 
 let displayTime = setInterval(() => {
+    currentTime.textContent = clock;
     console.log(clock);
 }, 1000);
 
 function setTimer() {
     runClock
     displayTime
+
 }
 
 // Clearing
@@ -145,6 +147,7 @@ function barrier() {
             console.log(`You Win with ${clock} seconds to spare`)
             scene.append(input);
             scene.append(enter)
+            currentTime.remove()
             const win = document.createElement('h1');
             win.textContent = `You Reached the End with ${clock} seconds to spare.`
             scene.append(win);
@@ -192,7 +195,6 @@ function barrier() {
                     left = obcLeft;
                     clearHorizontalIntervals()
                     noHorizantal()
-                    // clearTimeout(landCheck)
                     checkMovingLand()
                 }
             }
@@ -206,7 +208,6 @@ function barrier() {
                     left = obcLeft + obcWidth - plaWidth;
                     clearHorizontalIntervals()
                     noHorizantal()
-                    // clearTimeout(landCheck)
                     checkMovingLand()
                 }
             }
@@ -269,12 +270,6 @@ function physics(){
         rightInterval();
     }
 
-    console.log(
-        'movingUp:', movingUp,
-        'movingDown:', movingDown,
-        'movingRight:', movingRight,
-        'movingLeft:', movingLeft
-        )
     barrier();
 }
 
@@ -369,9 +364,7 @@ document.addEventListener("keydown", (event) => {
     if (keyName === 'ArrowUp') {
         if (landed) {
             if (!stopped) {
-                // stopped = true
                 noHorizantal();
-                // clearHorizontalIntervals()
             }
             clearVerticalIntervals();
             movingUp = true;
@@ -433,9 +426,7 @@ document.addEventListener("keydown", (event) => {
 // POST Request
 
 const populateScore = ()=>{
-    // showScore.remove()
     removeAllChildNodes(players);
-    // screen.append(hideScore);
     fetch('/players')
     .then((response)=>{
         return response.json();
@@ -505,19 +496,7 @@ enter.addEventListener('click', ()=>{
     input.value = ''; // Always clears text box
 });
 // -----------------------------------------------------------------------------
-// hideScore.addEventListener('click', ()=>{
-//     hideScore.remove();
-//     removeAllChildNodes(players)
-//     players.remove();
-//     screen.append(showScore);
-// })
 
-// -----------------------------------------------------------------------------
-// GET Request
-// showScore.addEventListener('click', populateScore)
-
-
-// -----------------------------------------------------------------------------
 addMusic('music.ogg');
 physics();
 populateScore();

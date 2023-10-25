@@ -32,7 +32,7 @@ let movingDown = true;
 
 let bottom = 500;
 let left = 200;
-// left = 5000; // Cheat 
+// left = 5000; // end now
 
 let leftMove;
 let rightMove;
@@ -144,7 +144,6 @@ function barrier() {
             clearInterval(displayTime);
             end.remove()
             document.querySelector('h1').remove()
-            console.log(`You Win with ${clock} seconds to spare`)
             scene.append(input);
             scene.append(enter)
             currentTime.remove()
@@ -153,6 +152,7 @@ function barrier() {
             scene.append(win);
 
         }
+        populateScore
     },1)
     
     checkObstacles = setInterval(()=>{

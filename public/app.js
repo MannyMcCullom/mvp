@@ -327,6 +327,7 @@ function addMusic(sound) {
     music.classList.add('music');
     // music.setAttribute('controls', true);
     music.setAttribute('autoplay', true);
+    music.setAttribute('preload', 'auto');
     music.setAttribute('loop', true);
     music.volume = 0.25;
     console.log('music volume', music.volume);

@@ -1,5 +1,7 @@
 const screen = document.querySelector('#screenContainer');
 
+addMusic('music.ogg');
+
 const scene = document.querySelector('.scene');
 let size = 80;
 scene.style.height = `${size * 9}px`
@@ -498,7 +500,6 @@ enter.addEventListener('click', ()=>{
 });
 // -----------------------------------------------------------------------------
 
-addMusic('music.ogg');
 physics();
 populateScore();
 setTimer();

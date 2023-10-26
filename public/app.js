@@ -1,6 +1,6 @@
 const screen = document.querySelector('#screenContainer');
 
-addMusic('music.ogg');
+
 
 const scene = document.querySelector('.scene');
 let size = 80;
@@ -26,6 +26,7 @@ let landed = false;
 let stopped = true;
 let slide = false;
 let clock = 60;
+let musicPlaying = false;
 
 let movingLeft = false;
 let movingRight = false;
@@ -112,6 +113,9 @@ function createObstacle(height,width,left,bottom){
 }
 
 function createEnd(height,width,left,bottom){
+    if (musicPlaying === false) {
+        addMusic('music.ogg');
+    }
     const end = document.createElement('div');
     end.innerText = 'end'
     end.classList.add('end')
@@ -338,6 +342,7 @@ function addMusic(sound) {
     mp3.setAttribute('type', 'audio/mpeg');
     music.append(mp3);
     document.body.append(music);
+    musicPlaying = true;
 }
 
 function addSFX(sound) {

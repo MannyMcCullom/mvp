@@ -334,7 +334,7 @@ function addMusic(sound) {
     music.volume = 0.25;
     console.log('music volume', music.volume);
     const mp3 = document.createElement('source');
-    mp3.setAttribute('src', ` sounds/${sound}`);
+    mp3.setAttribute('src', ` ${sound}`);
     mp3.setAttribute('type', 'audio/mpeg');
     music.append(mp3);
     document.body.append(music);
@@ -349,7 +349,7 @@ function addSFX(sound) {
     sfx.volume = 0.05;
     // console.log('sfx volume:', sfx.volume);
     const mp3 = document.createElement('source');
-    mp3.setAttribute('src', ` sounds/${sound}`);
+    mp3.setAttribute('src', ` ${sound}`);
     mp3.setAttribute('type', 'audio/mpeg');
     sfx.append(mp3);
     document.body.append(sfx);
